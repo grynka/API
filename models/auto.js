@@ -2,39 +2,26 @@ const {Schema, model} = require("mongoose");
 const {handleMongooseError} = require("../helpers");
 const Joi = require("joi");
 
-const contactsSchema = Joi.object({
-  name: Joi.string().required(),
-  email: Joi.string().required(),
-  phone: Joi.string().required(),
-  favorite: Joi.boolean(),
+const avtosSchema = Joi.object({
+id: {
+  type: String,
+},
+fulldescription: {
+  type: String,
+}
 });
 
 const updateSchema = Joi.object({
-  name: Joi.string(),
-  email: Joi.string(),
-  phone: Joi.string(),
-  favorite: Joi.boolean(), 
+
 });
 
-const contactSchema = Schema( {
-    name: {
-      type: String,
-      required: [true, 'Set name for contact'],
-    },
-    email: {
-      type: String,
-    },
-    phone: {
-      type: String,
-    },
-    favorite: {
-      type: Boolean,
-      default: false,
-    },
-    owner: {
-      type: Schema.Types.ObjectId,
-      ref: "user",
-    }
+const avtoSchema = Schema( {
+  id: {
+    type: String,
+  },
+  fulldescription: {
+    type: String,
+  }
   }, {versionKey: false})
 
 const updateFavoriteSchema = Joi.object({
@@ -42,17 +29,19 @@ const updateFavoriteSchema = Joi.object({
 })
 
 const schemas = {
-  contactsSchema,
+  avtoSchema,
   updateSchema,
   updateFavoriteSchema,
 }
 
-contactSchema.post("save", handleMongooseError);
+avtoSchema.post("save", handleMongooseError);
 
-const Contact = model("contact", contactSchema)
+const Brand = model("manufacture", avtoSchema)
+const Model = model("model", avtoSchema)
 
 
 module.exports = {
-    Contact,
-    schemas,
+  Brand,
+  Model,
+  schemas,
 }

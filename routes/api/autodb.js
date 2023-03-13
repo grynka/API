@@ -12,4 +12,6 @@ router.get("/type/:id", autobdOperations.type);
 
 router.get("/search/:query", autobdOperations.search);
 
+router.get("/manuf", autobdOperations.manuf);
+
 module.exports = router;

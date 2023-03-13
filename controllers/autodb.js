@@ -2,6 +2,16 @@ const { model } = require("mongoose");
 const { param } = require("../app");
 const Auto = require("../data/config");
 const { HttpError, ctrlWrapper } = require("../helpers");
+const { Brand } = require("../models/auto");
+const TecDoc = require("../data/config");
+
+
+
+const manuf = async (req, res) => {
+  console.log(TecDoc)
+  const data = await Brand.find({})
+  res.json(data);
+};
 
 const manufactures = async (req, res) => {
   const [data] = await Auto.query(
@@ -30,29 +40,37 @@ const models = async (req, res) => {
 const type = async (req, res) => {
   const { id } = req.params;
   const [data] = await Auto.query(
-    `SELECT DISTINCT id, description name, CONCAT (a.displaytitle , ' : ',  a.displayvalue) AS param
+    `SELECT DISTINCT id, description name, a.displaytitle ,  a.displayvalue
     FROM passanger_cars pc 
     JOIN passanger_car_attributes a on pc.id = a.passangercarid
     WHERE canbedisplayed = 'True'
     AND modelid = ${id} AND ispassengercar = 'True'`
   );
-const modelsId = Array.from(new Set( data.map(model => 
-model.id, model.name
-)))
+//const modelsId = Array.from(new Set( data.map(model => model.id, model.name )))
 
-let models = []
+let models = [];
 
-modelsId.forEach(function(model){
-    let types = (data.filter(item => item.id === model))
-    models = [model, ...((types.map(type =>
-       (type.id, type.name, {[type.displaytitle]: type.displayvalue,})
-    )))]
-    console.log(models)
-  })
+data.forEach(({id, name, displaytitle, displayvalue} = element) => {
+  const option = {id, name, [displaytitle]: displayvalue};
+  if (models.id !== option.id) {
+    console.log(option.id)
+  }
+  else 
+  models = {...models, ...option}
+ //console.log(models)
+});
+
+//modelsId.forEach(function(model){
+  //  let types = (data.filter(item => item.id === model))
+ //   models = [model, ...((types.map(type =>
+  //     (type.id, type.name, {[type.displaytitle]: type.displayvalue,})
+  //  )))]
+ //   console.log(models)
+//  })
 
 //const models = data.filter(model => model.id === modelsId[0])
 
-  res.json(data);
+  res.json(models);
 };
 
 const search = async (req, res) => {
@@ -70,4 +88,6 @@ module.exports = {
   models: ctrlWrapper(models),
   type: ctrlWrapper(type),
   search: ctrlWrapper(search),
+  manuf: ctrlWrapper(manuf),
+
 };
