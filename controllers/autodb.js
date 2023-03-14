@@ -3,13 +3,9 @@ const { param } = require("../app");
 const Auto = require("../data/config");
 const { HttpError, ctrlWrapper } = require("../helpers");
 const { Brand } = require("../models/auto");
-const TecDoc = require("../data/config");
-
-
 
 const manuf = async (req, res) => {
-  console.log(TecDoc)
-  const data = await Brand.find({})
+  const data = await Brand.find({ispassengercar: "true"})
   res.json(data);
 };
 
