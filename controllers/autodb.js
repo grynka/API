@@ -5,7 +5,7 @@ const { HttpError, ctrlWrapper } = require("../helpers");
 const { Brand } = require("../models/auto");
 
 const manuf = async (req, res) => {
-  const data = await Brand.find({"ispassengercar": "True"})
+  const data = await Brand.find({"ispassengercar": "True"}).sort("description")
   res.json(data);
 };
 
