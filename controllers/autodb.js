@@ -1,8 +1,28 @@
 const { model } = require("mongoose");
 const { param } = require("../app");
-const Auto = require("../data/config");
+const {Auto} = require("../data/config");
 const { HttpError, ctrlWrapper } = require("../helpers");
 const { Brand } = require("../models/auto");
+const sql = require('mssql');
+
+const {SERVER} = process.env;
+const {USER} = process.env;
+const {PASSWORD} = process.env;
+const {DATABASE} = process.env;
+
+const config = {
+  user: USER,
+  password: PASSWORD,
+  server: SERVER,
+  port: 1433,
+  database: DATABASE,
+  authentication: {
+      type: 'default'
+  },
+  options: {
+      encrypt: true
+  }
+}
 
 const manuf = async (req, res) => {
   const data = await Brand.find({"ispassengercar": "True"}).sort("description")
@@ -10,15 +30,18 @@ const manuf = async (req, res) => {
 };
 
 const manufactures = async (req, res) => {
-  const [data] = await Auto.query(
+  await sql.connect(config);
+  const data = await sql.query(
     `SELECT id, description name 
-    FROM manufacturers 
+    FROM [td1q2018].[manufacturers] 
     WHERE canbedisplayed = 'True' 
     AND ispassengercar = 'True' 
     AND iscommercialvehicle = 'False' 
     ORDER BY description`
-  );
-  res.json(data);
+    )
+   
+  res.json(data.recordset);
+
 };
 
 const models = async (req, res) => {
