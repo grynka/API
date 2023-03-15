@@ -25,7 +25,7 @@ const config = {
 }
 
 const manuf = async (req, res) => {
-  const data = await Brand.find({"ispassengercar": "True"}).sort("description")
+  const data = await Brand.find({"ispassengercar": "True", "canbedisplayed": "True", "iscommercialvehicle": "False"}, "description id").sort("description")
   res.json(data);
 };
 
