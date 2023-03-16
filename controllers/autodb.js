@@ -2,7 +2,7 @@ const { model } = require("mongoose");
 const { param } = require("../app");
 const {Auto} = require("../data/config");
 const { HttpError, ctrlWrapper } = require("../helpers");
-const { Brand } = require("../models/auto");
+const { Brand, Model } = require("../models/auto");
 const sql = require('mssql');
 
 const {SERVER} = process.env;
@@ -25,7 +25,13 @@ const config = {
 }
 
 const manuf = async (req, res) => {
-  const data = await Brand.find({"ispassengercar": "True", "canbedisplayed": "True", "iscommercialvehicle": "False"}, "description id").sort("description")
+  const data = await Model.find({"id": "True", "canbedisplayed": "True", "iscommercialvehicle": "False"}, "description id").sort("description")
+  res.json(data);
+};
+
+const mod = async (req, res) => {
+  const { id } = req.params;
+  const data = await Model.find({"manufacturerid": Number(id)})
   res.json(data);
 };
 
@@ -108,5 +114,5 @@ module.exports = {
   type: ctrlWrapper(type),
   search: ctrlWrapper(search),
   manuf: ctrlWrapper(manuf),
-
+  mod: ctrlWrapper(mod),
 };
