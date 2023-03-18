@@ -25,13 +25,13 @@ const config = {
 }
 
 const manuf = async (req, res) => {
-  const data = await Brand.find({"ispassengercar": "True", "canbedisplayed": "True", "iscommercialvehicle": "False"}, "description id").sort("description")
+  const data = await Brand.find({"ispassengercar": "True", "canbedisplayed": "True", "iscommercialvehicle": "False"}, "description id ").sort("description")
   res.json(data);
 };
 
 const mod = async (req, res) => {
   const { id } = req.params;
-  const data = await Model.find({"manufacturerid": Number(id)})
+  const data = await Model.find({"manufacturerid": Number(id)}, "id description constructioninterval").sort("description")
   res.json(data);
 };
 
