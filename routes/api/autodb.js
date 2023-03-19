@@ -1,8 +1,6 @@
 const express = require("express");
 const autobdOperations = require("../../controllers/autodb");
 const router = express.Router();
-//const { schemas } = require("../../models/auto")
-const {validateBody, isValidId, authenticate} = require("../../middlewares");
 
 router.get("/manufactures", autobdOperations.manufactures);
 
