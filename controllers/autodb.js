@@ -2,7 +2,6 @@ const { model } = require("mongoose");
 const { param } = require("../app");
 const {Auto} = require("../data/config");
 const { HttpError, ctrlWrapper } = require("../helpers");
-const { Brand, Model, Type } = require("../models/auto");
 const sql = require('mssql');
 
 const {SERVER} = process.env;
@@ -61,6 +60,10 @@ const type = async (req, res) => {
     WHERE canbedisplayed = 'True'
     AND modelid = ${id} AND ispassengercar = 'True'`
   );
+
+  console.log(data.map(({id, name,displaytitle, displayvalue}) => 
+      {"id": id, name, {[displaytitle]: displayvalue}}
+    ))
 //const modelsId = Array.from(new Set( data.map(model => model.id, model.name )))
 
 let models = [];
