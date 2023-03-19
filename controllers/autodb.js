@@ -1,4 +1,3 @@
-const { param } = require("../app");
 const { HttpError, ctrlWrapper } = require("../helpers");
 const mariadb = require("mariadb");
 
@@ -44,28 +43,25 @@ const type = async (req, res) => {
     AND modelid = ${id} AND ispassengercar = 'True'`
   );
 
-  const acc = new Map();
+ const acc = new Map();
 
-  data
+ data
     .map(({ id, name, displaytitle, displayvalue }) => {
       const container = {};
       container["id"] = id;
       container["name"] = name;
-      container["options"] = [{ [displaytitle]: displayvalue },];
+      container["options"] = [{ [displaytitle]: displayvalue }];
       return container;
     })
     .forEach((elem) => {
       if (acc.get(elem.id) === undefined) {
         acc.set(elem.id, elem);
       }
-      console.log(elem)
-
       const { options } = acc.get(elem.id);
       options.push(elem.options.pop());
     });
-  //console.log(acc);
 
-  res.json(acc);
+res.json(Array.from(acc.values()));
 };
 
 const search = async (req, res) => {
