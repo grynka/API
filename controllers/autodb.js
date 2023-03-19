@@ -1,47 +1,29 @@
-const { model } = require("mongoose");
 const { param } = require("../app");
-const {Auto} = require("../data/config");
 const { HttpError, ctrlWrapper } = require("../helpers");
-const sql = require('mssql');
+const mariadb = require("mariadb");
 
-const {SERVER} = process.env;
-const {USER} = process.env;
-const {PASSWORD} = process.env;
-const {DATABASE} = process.env;
-
-const config = {
-  user: USER,
-  password: PASSWORD,
-  server: SERVER,
-  port: 1433,
-  database: DATABASE,
-  authentication: {
-      type: 'default'
-  },
-  options: {
-      encrypt: true
-  }
-}
-
+const pool = mariadb.createPool({
+  host: process.env.SERVER,
+  user: process.env.USER,
+  password: process.env.PASSWORD,
+  database: process.env.DATABASE,
+});
 
 const manufactures = async (req, res) => {
-  await sql.connect(config);
-  const data = await sql.query(
-    `SELECT id, description name 
-    FROM [td1q2018].[manufacturers] 
+  const connection = await pool.getConnection();
+  const data = await connection.query(`SELECT id, description name 
+    FROM manufacturers
     WHERE canbedisplayed = 'True' 
     AND ispassengercar = 'True' 
     AND iscommercialvehicle = 'False' 
-    ORDER BY description`
-    )
-   
-  res.json(data.recordset);
-
+    ORDER BY description`);
+  res.json(data);
 };
 
 const models = async (req, res) => {
   const { id } = req.params;
-  const [data] = await Auto.query(
+  const connection = await pool.getConnection();
+  const data = await connection.query(
     `SELECT id, description name, constructioninterval
     FROM models
     WHERE canbedisplayed = 'True'
@@ -53,7 +35,8 @@ const models = async (req, res) => {
 
 const type = async (req, res) => {
   const { id } = req.params;
-  const [data] = await Auto.query(
+  const connection = await pool.getConnection();
+  const data = await connection.query(
     `SELECT id, description name, a.displaytitle ,  a.displayvalue
     FROM passanger_cars pc 
     JOIN passanger_car_attributes a on pc.id = a.passangercarid
@@ -61,39 +44,34 @@ const type = async (req, res) => {
     AND modelid = ${id} AND ispassengercar = 'True'`
   );
 
-  console.log(data.map(({id, name,displaytitle, displayvalue}) => 
-      {"id": id, name, {[displaytitle]: displayvalue}}
-    ))
-//const modelsId = Array.from(new Set( data.map(model => model.id, model.name )))
+  const acc = new Map();
 
-let models = [];
+  data
+    .map(({ id, name, displaytitle, displayvalue }) => {
+      const container = {};
+      container["id"] = id;
+      container["name"] = name;
+      container["options"] = [{ [displaytitle]: displayvalue },];
+      return container;
+    })
+    .forEach((elem) => {
+      if (acc.get(elem.id) === undefined) {
+        acc.set(elem.id, elem);
+      }
+      console.log(elem)
 
-data.forEach(({id, name, displaytitle, displayvalue} = element) => {
-  const option = {id, name, [displaytitle]: displayvalue};
-  if (models.id !== option.id) {
-   // console.log(option.id)
-  }
-  else 
-  models = {...models, ...option}
- //console.log(models)
-});
+      const { options } = acc.get(elem.id);
+      options.push(elem.options.pop());
+    });
+  //console.log(acc);
 
-//modelsId.forEach(function(model){
-  //  let types = (data.filter(item => item.id === model))
- //   models = [model, ...((types.map(type =>
-  //     (type.id, type.name, {[type.displaytitle]: type.displayvalue,})
-  //  )))]
- //   console.log(models)
-//  })
-
-//const models = data.filter(model => model.id === modelsId[0])
-
-  res.json(data);
+  res.json(acc);
 };
 
 const search = async (req, res) => {
   const { query } = req.params;
-  const [data] = await Auto.query(
+  const connection = await pool.getConnection();
+  const data = await connection.query(
     `SELECT m.description, a.OENbr FROM article_oe a 
       JOIN manufacturers m ON m.id=a.manufacturerId 
       WHERE a.datasupplierarticlenumber= ${query}`
