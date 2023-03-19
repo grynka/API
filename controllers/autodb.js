@@ -2,7 +2,7 @@ const { model } = require("mongoose");
 const { param } = require("../app");
 const {Auto} = require("../data/config");
 const { HttpError, ctrlWrapper } = require("../helpers");
-const { Brand, Model } = require("../models/auto");
+const { Brand, Model, Type } = require("../models/auto");
 const sql = require('mssql');
 
 const {SERVER} = process.env;
@@ -24,16 +24,6 @@ const config = {
   }
 }
 
-const manuf = async (req, res) => {
-  const data = await Brand.find({"ispassengercar": "True", "canbedisplayed": "True", "iscommercialvehicle": "False"}, "description id ").sort("description")
-  res.json(data);
-};
-
-const mod = async (req, res) => {
-  const { id } = req.params;
-  const data = await Model.find({"manufacturerid": Number(id)}, "id description constructioninterval").sort("description")
-  res.json(data);
-};
 
 const manufactures = async (req, res) => {
   await sql.connect(config);
@@ -65,7 +55,7 @@ const models = async (req, res) => {
 const type = async (req, res) => {
   const { id } = req.params;
   const [data] = await Auto.query(
-    `SELECT DISTINCT id, description name, a.displaytitle ,  a.displayvalue
+    `SELECT id, description name, a.displaytitle ,  a.displayvalue
     FROM passanger_cars pc 
     JOIN passanger_car_attributes a on pc.id = a.passangercarid
     WHERE canbedisplayed = 'True'
@@ -78,7 +68,7 @@ let models = [];
 data.forEach(({id, name, displaytitle, displayvalue} = element) => {
   const option = {id, name, [displaytitle]: displayvalue};
   if (models.id !== option.id) {
-    console.log(option.id)
+   // console.log(option.id)
   }
   else 
   models = {...models, ...option}
@@ -95,7 +85,7 @@ data.forEach(({id, name, displaytitle, displayvalue} = element) => {
 
 //const models = data.filter(model => model.id === modelsId[0])
 
-  res.json(models);
+  res.json(data);
 };
 
 const search = async (req, res) => {
@@ -113,6 +103,4 @@ module.exports = {
   models: ctrlWrapper(models),
   type: ctrlWrapper(type),
   search: ctrlWrapper(search),
-  manuf: ctrlWrapper(manuf),
-  mod: ctrlWrapper(mod),
 };
