@@ -3,15 +3,12 @@ const mongoose = require('mongoose')
 
 mongoose.set('strictQuery', false)
 
-const {PORT} = process.env;
-const {HOST} = process.env;
-
-const connection = mongoose.connect(HOST)
+const connection = mongoose.connect(process.env.HOST)
 
 connection
   .then(() => {
-    app.listen(PORT, function () {
-      console.log(`Database connection successful ${PORT}`)
+    app.listen(process.env.PORT, function () {
+      console.log(`Database connection successful ${process.env.PORT}`)
     })
   })
   .catch((err) =>{
