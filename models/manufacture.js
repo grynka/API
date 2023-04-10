@@ -4,14 +4,7 @@ const { handleMongooseError } = require("../helpers");
 
 // eslint-disable-next-line no-useless-escape
 
-const manufSchema = Joi.object({
-  id: Joi.string().required(),
-  canbedisplayed: Joi.bool().required(),
-  description: Joi.string().required(),
-  img: Joi.string().required(),
-});
-
-const manufactureSchema = Schema(
+const manufactureSchema = new Schema(
   {
     id: {
       type: String,
@@ -31,15 +24,6 @@ const manufactureSchema = Schema(
   { versionKey: false }
 );
 
-const schemas = {
-  manufactureSchema,
-};
-
-manufactureSchema.post("save", handleMongooseError);
-
 const Brand = model("manufacture", manufactureSchema);
 
-module.exports = {
-  Brand,
-  schemas,
-};
+module.exports = { Brand };

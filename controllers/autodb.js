@@ -1,6 +1,6 @@
 const { HttpError, ctrlWrapper } = require("../helpers");
 const mariadb = require("mariadb");
-const { Brands } = require("../models/manufcture");
+const { Brand } = require("../models/manufacture")
 
 
 const pool = mariadb.createPool({
@@ -80,10 +80,11 @@ const search = async (req, res) => {
 };
 
 const brands = async (req, res, next) => {
+  console.log(Brand)
   try {
-    const brand = await Brands.find().where({ispassengercar: "True"}).where({iscommercialvehicle: "False"}).where({isengine: "False"});
+    const brand = await Brand.find().where({ispassengercar: "True"}).where({iscommercialvehicle: "False"}).where({isengine: "False"});
     console.log(brand.map(man => man.description))
-    res.status(200).json({ brand });
+    res.status(200).json( brand );
   } catch (error) {
     next(error);
   }
