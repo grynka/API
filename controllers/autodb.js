@@ -1,6 +1,9 @@
 const { HttpError, ctrlWrapper } = require("../helpers");
 const mariadb = require("mariadb");
 
+const { SECRET_KEY, BASE_URL } = process.env;
+
+
 const pool = mariadb.createPool({
   host: process.env.SERVER,
   user: process.env.USER,
