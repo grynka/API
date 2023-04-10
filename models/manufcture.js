@@ -37,7 +37,7 @@ const schemas = {
 
 manufactureSchema.post("save", handleMongooseError);
 
-const Brand = model("brand", manufactureSchema);
+const Brand = model("manufacture", manufactureSchema);
 
 module.exports = {
   Brand,

@@ -1,7 +1,6 @@
 const { HttpError, ctrlWrapper } = require("../helpers");
 const mariadb = require("mariadb");
-
-const { SECRET_KEY, BASE_URL } = process.env;
+const { Brands } = require("../models/manufcture");
 
 
 const pool = mariadb.createPool({
@@ -10,6 +9,8 @@ const pool = mariadb.createPool({
   password: process.env.PASSWORD,
   database: process.env.DATABASE,
 });
+
+
 
 const manufactures = async (req, res) => {
   const connection = await pool.getConnection();
@@ -78,9 +79,20 @@ const search = async (req, res) => {
   res.json(data);
 };
 
+const brands = async (req, res, next) => {
+  try {
+    const brand = await Brands.find().where({ispassengercar: "True"}).where({iscommercialvehicle: "False"}).where({isengine: "False"});
+    console.log(brand.map(man => man.description))
+    res.status(200).json({ brand });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   manufactures: ctrlWrapper(manufactures),
   models: ctrlWrapper(models),
+  brands: ctrlWrapper(brands),
   type: ctrlWrapper(type),
   search: ctrlWrapper(search),
 };
